@@ -1,73 +1,66 @@
 ﻿using AutoReservation.Dal;
 using AutoReservation.Dal.Entities;
-using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 
 namespace AutoReservation.BusinessLayer
 {
     public class KundeManager
         : ManagerBase
     {
-        public async List<Kunde> GetKunden()
+        public async Task<List<Kunde>> getClients()
         {
             using AutoReservationContext context = new AutoReservationContext();
-          
-                var kunden = context.Kunden;
-                return kunden.ToListAsync();
+         
+               return await context.Kunden.ToListAsync();
             
         }
 
-        public Kunde GetKundeById(int id)
-        {
-        using AutoReservationContext context = new AutoReservationContext();
-           
-                Kunde kunde = context
-                    .Kunden
-                    .Single(c => c.Id == id);
-
-            return kunde;
-        }
-
-        public void AddKunde(String Nachname, String Vorname, DateTime Geburtsdatum)
+        public void addClient(String name, String surname, DateTime birthday)
         {
         using AutoReservationContext context = new AutoReservationContext();
             
-                context.Kunden.Add(new Kunde { Nachname = Nachname, Vorname = Vorname, Geburtsdatum = Geburtsdatum });
+                context.Kunden.AddAsync(new Kunde { Nachname = name, Vorname = surname, Geburtsdatum = birthday });
                 context.SaveChanges();
             
         }
 
-        public void AddKunde(Kunde newKunde)
+        public async Task<Kunde> getCLientsById(int ClientId)
         {
-        using AutoReservationContext context = new AutoReservationContext();
-            
-                context.Kunden.Add(newKunde);
+            using AutoReservationContext context = new AutoReservationContext();
+
+            return await context.Kunden.SingleAsync(c => c.Id == ClientId);
+        }
+
+        public void updateClient(Kunde Client)
+        {
+            using AutoReservationContext context = new AutoReservationContext();
+                context.Entry(Client).State = EntityState.Modified;
                 context.SaveChanges();
             
         }
 
-        public void UpdateKunde(Kunde updatedKunde)
+        public void deleteClient(int ClientId)
         {
             using AutoReservationContext context = new AutoReservationContext();
             
-                context.Entry(updatedKunde).State = EntityState.Modified;
+                Kunde client = context.Kunden.Single(c => c.Id == ClientId);
+                context.Kunden.Remove(client);
                 context.SaveChanges();
             
         }
 
-        public void deleteKunde(int id)
+
+        public void addClient(Kunde newClient)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            
-                Kunde kunde = context
-                    .Kunden
-                    .Single(c => c.Id == id);
 
-                context.Kunden.Remove(kunde);
-                context.SaveChanges();
-            
+            context.Kunden.AddAsync(newClient);
+            context.SaveChanges();
+
         }
     }
 }

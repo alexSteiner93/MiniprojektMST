@@ -1,54 +1,44 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using AutoReservation.Dal;
 using AutoReservation.Dal.Entities;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
 namespace AutoReservation.BusinessLayer
+
 {
     public class AutoManager
         : ManagerBase
     {
 
-        public async Task<List<Auto>> GetAll()
+        public async Task<List<Auto>> GetAllCars()
         {
             using AutoReservationContext context = new AutoReservationContext();
             return await context.Autos.ToListAsync();
         }
 
-        public async Auto getAutoByPrimary(int primary)
+        public void deleteCar(int CarId)
         {
             using AutoReservationContext context = new AutoReservationContext();
-
-
-                Auto auto = context.Autos.Single(a => a.Id == id)
-
-                return auto;
-
-        }
-
-        public async void updateAuto(Auto auto)
-        {
-            using AutoReservationContext context = new AutoReservationContext();
-
-
-
-            context.Entry(updatedAuto).State = EntityState.Modified;
+            Auto car = context.Autos.First(a => a.Id == CarId);
+            context.Entry(car).State = EntityState.Deleted;
             context.SaveChanges();
-
         }
 
-        public void DeleteAuto(int id)
+        public async Task<Auto> getCarByPrimary(int primary)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            Auto auto = context.Autos.First(a => a.Id == id);
-
-            context.Entry(auto).State = EntityState.Deleted;
-            context.SaveChanges();
+            return await context.Autos.SingleAsync(a => a.Id == primary);
 
         }
 
+        public void updateCar(Auto auto)
+        {
+            using AutoReservationContext context = new AutoReservationContext();
+            context.Entry(auto).State = EntityState.Modified;
+            context.SaveChanges();
+        }
     }
 }
 

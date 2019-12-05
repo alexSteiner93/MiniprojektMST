@@ -1,42 +1,30 @@
 ﻿using AutoReservation.BusinessLayer.Exceptions;
-using AutoReservation.Dal;
-using AutoReservation.Dal.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Linq;
+using AutoReservation.Dal.Entities;
+using AutoReservation.Dal;
+using Microsoft.EntityFrameworkCore;
+
+
 namespace AutoReservation.BusinessLayer
 {
     public class ReservationManager
     : ManagerBase
     {
-        public async List<Reservation> GetReservations()
+        public async Task<List<Reservation>> getReservations()
         {
-            using (AutoReservationContext context = new AutoReservationContext();
+            using AutoReservationContext context = new AutoReservationContext();
 
-            return await context
-                .Reservationen
-                .Include(o => o.Auto)
-                .Include(o => o.Kunde)
-                .ToList();
+            return await context.Reservationen.Include(o => o.Auto).Include(o => o.Kunde)
+                .ToListAsync();
         }
 
-        public async Reservation GetReservationById(int id)
+        public void addReservation(int id, int kundeId, int autoId, DateTime von, DateTime bis)
         {
-            using (AutoReservationContext context = new AutoReservationContext();
-
-            Reservation reservation = context
-                    .Reservationen
-                    .Include(o => o.Auto)
-                    .Include(o => o.Kunde)
-                    .Single(c => c.ReservationsNr == id);
-
-            return await reservation;
-        }
-
-        public void AddReservation(int id, int kundeId, int autoId, DateTime von, DateTime bis)
-        {
-            using (AutoReservationContext context = new AutoReservationContext();
+            using AutoReservationContext context = new AutoReservationContext();
 
             if (DateRangeCheck(von, bis) && IsCarAvailable(autoId, von, bis))
             {
@@ -47,9 +35,29 @@ namespace AutoReservation.BusinessLayer
 
         }
 
+        public async Task<Reservation> getReservationByPrimary(int Primary)
+        {
+            using AutoReservationContext context = new AutoReservationContext();
+            return await context.Reservationen.Include(o => o.Auto).Include(o => o.Kunde)
+                    .SingleAsync(c => c.ReservationsNr == Primary);
+        }
+
+        public bool DateRangeCheck(DateTime? von, DateTime? bis)
+        {
+            TimeSpan diff = bis.Subtract(von);
+            if (bis > von && diff.Days >= 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public void AddReservation(Reservation reservation)
         {
-            using (AutoReservationContext context = new AutoReservationContext();
+            using AutoReservationContext context = new AutoReservationContext();
 
             if (DateRangeCheck(reservation.Von, reservation.Bis) &&
                 IsCarAvailable(reservation.AutoId, reservation.Von, reservation.Bis))
@@ -57,6 +65,7 @@ namespace AutoReservation.BusinessLayer
                 context.Entry(reservation).State = EntityState.Added;
                 context.SaveChanges();
             }
+          
 
         }
 
@@ -76,7 +85,7 @@ namespace AutoReservation.BusinessLayer
 
         public void DeleteReservation(int id)
         {
-            using (AutoReservationContext context = new AutoReservationContext();
+            using AutoReservationContext context = new AutoReservationContext();
 
             Reservation reservationToBeDeleted = context
                 .Reservationen
@@ -86,21 +95,10 @@ namespace AutoReservation.BusinessLayer
             context.SaveChanges();
         }
 
-        public bool DateRangeCheck(DateTime von, DateTime bis)
-        {
-            TimeSpan diff = bis.Subtract(von);
-            if (bis > von && diff.Days >= 1)
-            {
-                return true;
-            }
-
-            throw new InvalidDateRangeException("date range not valid");
-        }
-
-        public bool IsCarAvailable(int id, DateTime von, DateTime bis)
+        public bool IsCarAvailable(int id, DateTime? von, DateTime? bis)
         {
             bool isAvailable = true;
-            using (AutoReservationContext context = new AutoReservationContext();
+            using AutoReservationContext context = new AutoReservationContext();
             var reservations = context
                 .Reservationen
                 .Where(o => o.AutoId.Equals(id))
@@ -115,11 +113,6 @@ namespace AutoReservation.BusinessLayer
                 {
                     isAvailable = false;
                 }
-            }
-
-            if (!isAvailable)
-            {
-                throw new AutoUnavailableException("Car not available in this range");
             }
 
             return isAvailable;
