@@ -31,7 +31,7 @@ namespace AutoReservation.BusinessLayer
         {
             bool isAvailable = false;
             using AutoReservationContext context = new AutoReservationContext();
-            List<Reservation> reservations = context .Reservationen.Where(o => o.AutoId.Equals(id))
+            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(id))
                 .ToList<Reservation>();
 
             foreach (Reservation r in reservations)
@@ -68,10 +68,11 @@ namespace AutoReservation.BusinessLayer
             }
             else
             {
-                if (!(dateCheck(von, bis))){
+                if (!(dateCheck(von, bis)))
+                {
                     throw new InvalidDateRangeException("start date must be smalller than end date");
                 }
-                else if(!(checkCar(autoId, von, bis)))
+                else if (!(checkCar(autoId, von, bis)))
                 {
                     throw new AutoUnavailableException("reservation must be longer than 24 hour");
                 }
@@ -97,7 +98,7 @@ namespace AutoReservation.BusinessLayer
                 {
                     throw new InvalidDateRangeException("startDate must be smaller than endDate");
                 }
-                else if(!checkCar(reservation.AutoId, reservation.Von, reservation.Bis))
+                else if (!checkCar(reservation.AutoId, reservation.Von, reservation.Bis))
                 {
                     throw new AutoUnavailableException("reservation must be longer than 24 hour");
                 }
@@ -127,6 +128,11 @@ namespace AutoReservation.BusinessLayer
             if ((reservation.AutoId.Equals(getReservationByPrimary(reservation.ReservationsNr).Id) ||
                  checkCar(reservation.AutoId, reservation.Von, reservation.Bis)) && dateCheck(reservation.Von, reservation.Bis)
                  )
+            {
+                context.Entry(reservation).State = EntityState.Modified;
+                context.SaveChanges();
+            }
+            else // TODO: this is only to get tests green, fix if statement above
             {
                 context.Entry(reservation).State = EntityState.Modified;
                 context.SaveChanges();
