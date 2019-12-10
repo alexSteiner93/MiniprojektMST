@@ -1,0 +1,8 @@
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/bin/Debug/netstandard2.1/AutoReservation.Service.Client.deps.json
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/bin/Debug/netstandard2.1/AutoReservation.Service.Client.dll
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/bin/Debug/netstandard2.1/AutoReservation.Service.Client.pdb
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/obj/Debug/netstandard2.1/AutoReservation.Service.Client.csprojAssemblyReference.cache
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/obj/Debug/netstandard2.1/AutoReservation.Service.Client.AssemblyInfoInputs.cache
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/obj/Debug/netstandard2.1/AutoReservation.Service.Client.AssemblyInfo.cs
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/obj/Debug/netstandard2.1/AutoReservation.Service.Client.dll
+/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Client/obj/Debug/netstandard2.1/AutoReservation.Service.Client.pdb

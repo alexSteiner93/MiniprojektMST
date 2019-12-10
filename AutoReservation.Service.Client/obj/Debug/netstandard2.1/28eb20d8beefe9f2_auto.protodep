@@ -1,0 +1,3 @@
+obj/Debug/netstandard2.1/Auto.cs \
+obj/Debug/netstandard2.1/AutoGrpc.cs: /Users/Alex/.nuget/packages/grpc.tools/2.24.0/build/native/include/google/protobuf/empty.proto\
+ ../_Protos/auto.proto
