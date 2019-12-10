@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoReservation.Dal.Entities;
 using AutoReservation.TestEnvironment;
 using Xunit;
 
@@ -18,10 +19,13 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public async Task UpdateAutoTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            Auto car = await _target.getCarByPrimary(1);
+            car.Tagestarif = 60;
+
+            _target.updateCar(car);
+
+            car = await _target.getCarByPrimary(1);
+            Xunit.Assert.Equal(60, car.Tagestarif);
         }
     }
 }
