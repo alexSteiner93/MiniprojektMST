@@ -124,7 +124,7 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if ((reservation.AutoId.Equals(getReservationByPrimary(reservation.ReservationsNr).AutoId) ||
+            if ((reservation.AutoId.Equals(getReservationByPrimary(reservation.ReservationsNr).Id) ||
                  checkCar(reservation.AutoId, reservation.Von, reservation.Bis)) && dateCheck(reservation.Von, reservation.Bis)
                  )
             {
