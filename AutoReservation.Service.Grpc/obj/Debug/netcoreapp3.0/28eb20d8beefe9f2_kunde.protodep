@@ -1,0 +1,4 @@
+obj/Debug/netcoreapp3.0/Kunde.cs \
+obj/Debug/netcoreapp3.0/KundeGrpc.cs: /Users/Alex/.nuget/packages/grpc.tools/2.23.0/build/native/include/google/protobuf/empty.proto\
+ /Users/Alex/.nuget/packages/grpc.tools/2.23.0/build/native/include/google/protobuf/timestamp.proto\
+ ../_Protos/kunde.proto

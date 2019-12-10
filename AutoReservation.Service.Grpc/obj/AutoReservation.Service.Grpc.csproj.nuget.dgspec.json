@@ -1,0 +1,202 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Grpc/AutoReservation.Service.Grpc.csproj": {}
+  },
+  "projects": {
+    "/Users/Alex/Projects/MiniprojektMST/AutoReservation.BusinessLayer/AutoReservation.BusinessLayer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.BusinessLayer/AutoReservation.BusinessLayer.csproj",
+        "projectName": "AutoReservation.BusinessLayer",
+        "projectPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.BusinessLayer/AutoReservation.BusinessLayer.csproj",
+        "packagesPath": "/Users/Alex/.nuget/packages/",
+        "outputPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.BusinessLayer/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/Alex/.config/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "projectReferences": {
+              "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Dal/AutoReservation.Dal.csproj": {
+                "projectPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Dal/AutoReservation.Dal.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Dal/AutoReservation.Dal.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Dal/AutoReservation.Dal.csproj",
+        "projectName": "AutoReservation.Dal",
+        "projectPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Dal/AutoReservation.Dal.csproj",
+        "packagesPath": "/Users/Alex/.nuget/packages/",
+        "outputPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Dal/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/Alex/.config/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.1": {
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            },
+            "Microsoft.Extensions.Logging.Console": {
+              "target": "Package",
+              "version": "[3.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "NETStandard.Library": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Grpc/AutoReservation.Service.Grpc.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Grpc/AutoReservation.Service.Grpc.csproj",
+        "projectName": "AutoReservation.Service.Grpc",
+        "projectPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Grpc/AutoReservation.Service.Grpc.csproj",
+        "packagesPath": "/Users/Alex/.nuget/packages/",
+        "outputPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.Service.Grpc/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/Users/Alex/.config/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {
+              "/Users/Alex/Projects/MiniprojektMST/AutoReservation.BusinessLayer/AutoReservation.BusinessLayer.csproj": {
+                "projectPath": "/Users/Alex/Projects/MiniprojektMST/AutoReservation.BusinessLayer/AutoReservation.BusinessLayer.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "Grpc.AspNetCore": {
+              "target": "Package",
+              "version": "[2.24.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
