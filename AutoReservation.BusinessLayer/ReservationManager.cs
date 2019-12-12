@@ -131,12 +131,6 @@ namespace AutoReservation.BusinessLayer
                 context.Entry(reservation).State = EntityState.Modified;
                 context.SaveChanges();
             }
-            else // TODO: this is only to get tests green, fix if statement above
-            {
-                context.Entry(reservation).State = EntityState.Modified;
-                context.SaveChanges();
-            }
-
         }
     }
 }

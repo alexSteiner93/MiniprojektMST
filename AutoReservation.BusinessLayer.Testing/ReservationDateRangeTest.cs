@@ -10,14 +10,10 @@ namespace AutoReservation.BusinessLayer.Testing
         : TestBase
     {
         private readonly ReservationManager _target;
-        private readonly KundeManager _kundeManager;
-        private Reservation _existingReservation;
-        private Kunde _existingKunde;
 
         public ReservationDateRangeTest()
         {
             _target = new ReservationManager();
-            _kundeManager = new KundeManager();
         }
 
         [Fact]
