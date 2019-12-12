@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using AutoReservation.Dal.Entities;
 using AutoReservation.Dal;
-using Microsoft.EntityFrameworkCore;
-using AutoReservation.BusinessLayer.Exceptions;
 
 
 namespace AutoReservation.BusinessLayer
@@ -15,39 +13,41 @@ namespace AutoReservation.BusinessLayer
     public class ReservationManager
     : ManagerBase
     {
-        public bool dateCheck(DateTime von, DateTime bis)
+        public bool IsDateCorrect(DateTime von, DateTime bis)
         {
-            if ((von - bis).Days > 0)
-            {
-                return true;
+            if ((bis - von).TotalHours >= 24) return true;
 
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
-        public bool checkCar(int id, DateTime von, DateTime bis)
+        public bool IsCarAvailable(int AutoId, DateTime von, DateTime bis)
         {
             bool isAvailable = false;
             using AutoReservationContext context = new AutoReservationContext();
-            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(id))
+            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(AutoId))
                 .ToList<Reservation>();
 
-            foreach (Reservation r in reservations)
+            foreach (Reservation reservation in reservations)
             {
-                if (!((von < r.Bis) && (bis > r.Von))
-                    || ((von < r.Bis) && (bis > r.Von))
-                    || ((bis > r.Von) && (von < r.Bis))
-                    || ((bis > r.Von) && (von < r.Bis)))
+                if ((von > reservation.Bis) // after
+                    || (bis < reservation.Von)) // before
                 {
                     isAvailable = true;
+                } 
+                else
+                {
+                    return false;
                 }
             }
 
             return isAvailable;
 
         }
+
+        public bool IsAvailable (DateTime von, DateTime bis, int autoId)
+        {
+            return IsDateCorrect(von, bis) && IsCarAvailable(autoId, von, bis);
+        }
+
         public async Task<List<Reservation>> getReservations()
         {
             using AutoReservationContext context = new AutoReservationContext();
@@ -60,21 +60,20 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (dateCheck(von, bis) && checkCar(autoId, von, bis))
+            if (IsAvailable(von, bis, autoId))
             {
-                context.Reservationen.Add(new Reservation
-                { ReservationsNr = id, KundeId = kundeId, AutoId = autoId, Von = von, Bis = bis });
+                context.Reservationen.Add(new Reservation{ ReservationsNr = id, KundeId = kundeId, AutoId = autoId, Von = von, Bis = bis });
                 context.SaveChanges();
             }
             else
             {
-                if (!(dateCheck(von, bis)))
+                if (!(IsDateCorrect(von, bis)))
                 {
-                    throw new InvalidDateRangeException("start date must be smalller than end date");
+                    throw new InvalidDateRangeException("Invalid Date range");
                 }
-                else if (!(checkCar(autoId, von, bis)))
+                else if (!(IsCarAvailable(autoId, von, bis)))
                 {
-                    throw new AutoUnavailableException("reservation must be longer than 24 hour");
+                    throw new AutoUnavailableException("car not available");
                 }
 
             }
@@ -85,8 +84,7 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (dateCheck(reservation.Von, reservation.Bis) &&
-                checkCar(reservation.AutoId, reservation.Von, reservation.Bis))
+            if (IsAvailable(reservation.Von, reservation.Bis, reservation.AutoId))
             {
                 context.Entry(reservation).State = EntityState.Added;
                 context.SaveChanges();
@@ -94,13 +92,13 @@ namespace AutoReservation.BusinessLayer
 
             else
             {
-                if (!dateCheck(reservation.Von, reservation.Bis))
+                if (!IsDateCorrect(reservation.Von, reservation.Bis))
                 {
-                    throw new InvalidDateRangeException("startDate must be smaller than endDate");
+                    throw new InvalidDateRangeException("Invalid Date range");
                 }
-                else if (!checkCar(reservation.AutoId, reservation.Von, reservation.Bis))
+                else if (!IsCarAvailable(reservation.AutoId, reservation.Von, reservation.Bis))
                 {
-                    throw new AutoUnavailableException("reservation must be longer than 24 hour");
+                    throw new AutoUnavailableException("car not available");
                 }
             }
         }
@@ -126,7 +124,7 @@ namespace AutoReservation.BusinessLayer
             using AutoReservationContext context = new AutoReservationContext();
 
             if ((reservation.AutoId.Equals(getReservationByPrimary(reservation.ReservationsNr).Id) ||
-                 checkCar(reservation.AutoId, reservation.Von, reservation.Bis)) && dateCheck(reservation.Von, reservation.Bis)
+                 IsCarAvailable(reservation.AutoId, reservation.Von, reservation.Bis)) && IsDateCorrect(reservation.Von, reservation.Bis)
                  )
             {
                 context.Entry(reservation).State = EntityState.Modified;
