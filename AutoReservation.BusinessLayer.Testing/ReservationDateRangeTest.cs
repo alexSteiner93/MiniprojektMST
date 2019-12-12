@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using AutoReservation.Dal.Entities;
 using AutoReservation.TestEnvironment;
 using Xunit;
 
@@ -8,55 +10,84 @@ namespace AutoReservation.BusinessLayer.Testing
         : TestBase
     {
         private readonly ReservationManager _target;
+        private readonly KundeManager _kundeManager;
+        private Reservation _existingReservation;
+        private Kunde _existingKunde;
 
         public ReservationDateRangeTest()
         {
             _target = new ReservationManager();
+            _kundeManager = new KundeManager();
         }
 
         [Fact]
-        public void ScenarioOkay01TestAsync()
+        public void ScenarioOkay01Test()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            DateTime von = new DateTime(2019, 1, 1);
+            DateTime bis = new DateTime(2019, 1, 10);
+
             // act
+            bool IsCorrect = _target.IsDateCorrect(von, bis);
+
             // assert
+            Xunit.Assert.True(IsCorrect);
         }
 
         [Fact]
         public void ScenarioOkay02Test()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            DateTime von = new DateTime(2019, 1, 1);
+            DateTime bis = new DateTime(2019, 1, 2);
+
             // act
+            bool IsCorrect = _target.IsDateCorrect(von, bis);
+
             // assert
+            Xunit.Assert.True(IsCorrect);
         }
 
         [Fact]
         public void ScenarioNotOkay01Test()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            DateTime von = new DateTime(2019, 1, 1);
+            DateTime bis = new DateTime(2019, 1, 1);
+
             // act
+            bool IsCorrect = _target.IsDateCorrect(von, bis);
+
             // assert
+            Xunit.Assert.False(IsCorrect);
         }
 
         [Fact]
         public void ScenarioNotOkay02Test()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            DateTime von = new DateTime(2019, 1, 2);
+            DateTime bis = new DateTime(2019, 1, 1);
+
             // act
+            bool IsCorrect = _target.IsDateCorrect(von, bis);
+
             // assert
+            Xunit.Assert.False(IsCorrect);
         }
 
         [Fact]
         public void ScenarioNotOkay03Test()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            DateTime von = new DateTime(2019, 1, 2);
+            DateTime bis = new DateTime(2019, 1, 1);
+
             // act
+            bool IsCorrect = _target.IsDateCorrect(von, bis);
+
             // assert
+            Xunit.Assert.False(IsCorrect);
         }
     }
 }

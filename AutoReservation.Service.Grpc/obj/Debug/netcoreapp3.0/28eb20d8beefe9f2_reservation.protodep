@@ -1,6 +1,0 @@
-obj/Debug/netcoreapp3.0/Reservation.cs \
-obj/Debug/netcoreapp3.0/ReservationGrpc.cs: /Users/Alex/.nuget/packages/grpc.tools/2.23.0/build/native/include/google/protobuf/empty.proto\
- /Users/Alex/.nuget/packages/grpc.tools/2.23.0/build/native/include/google/protobuf/timestamp.proto\
- ../_Protos/auto.proto\
- ../_Protos/kunde.proto\
- ../_Protos/reservation.proto

@@ -1,4 +1,0 @@
-obj/Debug/netstandard2.1/Kunde.cs \
-obj/Debug/netstandard2.1/KundeGrpc.cs: /Users/Alex/.nuget/packages/grpc.tools/2.24.0/build/native/include/google/protobuf/empty.proto\
- /Users/Alex/.nuget/packages/grpc.tools/2.24.0/build/native/include/google/protobuf/timestamp.proto\
- ../_Protos/kunde.proto

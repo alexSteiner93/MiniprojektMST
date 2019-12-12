@@ -19,12 +19,12 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public async Task UpdateAutoTest()
         {
-            Auto car = await _target.getCarByPrimary(1);
+            Auto car = await _target.GetCarByPrimary(1);
             car.Tagestarif = 60;
 
-            _target.updateCar(car);
+            _target.UpdateCar(car);
 
-            car = await _target.getCarByPrimary(1);
+            car = await _target.GetCarByPrimary(1);
             Xunit.Assert.Equal(60, car.Tagestarif);
         }
     }

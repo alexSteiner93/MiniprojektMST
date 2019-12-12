@@ -17,7 +17,7 @@ namespace AutoReservation.BusinessLayer
             return await context.Autos.ToListAsync();
         }
 
-        public void deleteCar(int CarId)
+        public void DeleteCar(int CarId)
         {
             using AutoReservationContext context = new AutoReservationContext();
             Auto car = context.Autos.First(a => a.Id == CarId);
@@ -25,7 +25,7 @@ namespace AutoReservation.BusinessLayer
             context.SaveChanges();
         }
 
-        public async Task<Auto> getCarByPrimary(int primary)
+        public async Task<Auto> GetCarByPrimary(int primary)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
@@ -33,7 +33,7 @@ namespace AutoReservation.BusinessLayer
 
         }
 
-        public void updateCar(Auto auto)
+        public void UpdateCar(Auto auto)
         {
             using AutoReservationContext context = new AutoReservationContext();
             context.Entry(auto).State = EntityState.Modified;

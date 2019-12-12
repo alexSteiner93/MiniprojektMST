@@ -23,8 +23,9 @@ namespace AutoReservation.BusinessLayer
         {
             bool isAvailable = false;
             using AutoReservationContext context = new AutoReservationContext();
-            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(AutoId))
-                .ToList<Reservation>();
+            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(AutoId)).ToList();
+
+            if (reservations.Count == 0) return true;
 
             foreach (Reservation reservation in reservations)
             {
@@ -56,7 +57,7 @@ namespace AutoReservation.BusinessLayer
                 .ToListAsync();
         }
 
-        public void addReservation(int id, int kundeId, int autoId, DateTime von, DateTime bis)
+        public void AddReservation(int id, int kundeId, int autoId, DateTime von, DateTime bis)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
@@ -110,7 +111,7 @@ namespace AutoReservation.BusinessLayer
                     .SingleAsync(c => c.ReservationsNr == Primary);
         }
 
-        public void deleteReservation(int ReservationId)
+        public void DeleteReservation(int ReservationId)
         {
             using AutoReservationContext context = new AutoReservationContext();
             Reservation reservation = context.Reservationen.First(a => a.ReservationsNr == ReservationId);

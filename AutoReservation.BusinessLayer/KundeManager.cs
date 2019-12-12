@@ -11,7 +11,7 @@ namespace AutoReservation.BusinessLayer
     public class KundeManager
         : ManagerBase
     {
-        public async Task<List<Kunde>> getClients()
+        public async Task<List<Kunde>> GetClients()
         {
             using AutoReservationContext context = new AutoReservationContext();
          
@@ -19,7 +19,7 @@ namespace AutoReservation.BusinessLayer
             
         }
 
-        public void addClient(String name, String surname, DateTime birthday)
+        public void AddClient(String name, String surname, DateTime birthday)
         {
         using AutoReservationContext context = new AutoReservationContext();
             
@@ -28,14 +28,14 @@ namespace AutoReservation.BusinessLayer
             
         }
 
-        public async Task<Kunde> getCLientsById(int ClientId)
+        public async Task<Kunde> GetCLientsById(int ClientId)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
             return await context.Kunden.SingleAsync(c => c.Id == ClientId);
         }
 
-        public void updateClient(Kunde Client)
+        public void UpdateClient(Kunde Client)
         {
             using AutoReservationContext context = new AutoReservationContext();
                 context.Entry(Client).State = EntityState.Modified;
@@ -43,7 +43,7 @@ namespace AutoReservation.BusinessLayer
             
         }
 
-        public void deleteClient(int ClientId)
+        public void DeleteClient(int ClientId)
         {
             using AutoReservationContext context = new AutoReservationContext();
             
@@ -54,7 +54,7 @@ namespace AutoReservation.BusinessLayer
         }
 
 
-        public void addClient(Kunde newClient)
+        public void AddClient(Kunde newClient)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
