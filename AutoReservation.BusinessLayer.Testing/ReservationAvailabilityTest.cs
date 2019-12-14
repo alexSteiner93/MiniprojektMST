@@ -22,7 +22,7 @@ namespace AutoReservation.BusinessLayer.Testing
 
         private async Task UpdateContext()
         {
-            _existingReservation = await _target.getReservationByPrimary(1);
+            _existingReservation = await _target.GetReservationByPrimary(1);
         }
 
         [Fact]

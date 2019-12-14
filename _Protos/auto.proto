@@ -6,5 +6,51 @@ option csharp_namespace = "AutoReservation.Service.Grpc";
 
 package AutoReservation;
 
+
+enum CarClasses{
+    StandardAuto = 0;
+    MittelklasseAuto = 1;
+    LuxusklasseAuto = 2;
+
+}
+
+
+message GetCarByPrimaryRequest{
+    int32 Id = 1;
+
+}
+
+message AutoDto{
+
+    int32 Id =1;
+    string Marke = 2;
+    int32 Tagestarif = 3;
+    bytes RowVersion = 4;
+    CarClasses CarClass = 5;
+    int32 Basistarif = 6;
+}
+
+message AutoAllDto{
+
+    repeated AutoDto cars = 1;
+
+}
+
 service AutoService {
+
+    rpc GetAllCars(google.protobuf.Empty)
+    returns (AutoAllDto);
+
+    rpc GetCarByPrimary (GetCarByPrimaryRequest)
+    returns (AutoDto);
+
+    rpc AddCar(AutoDto)
+    returns (google.protobuf.Empty);
+
+    rpc UpdateCar(AutoDto)
+    returns (google.protobuf.Empty);
+
+    rpc DeleteCar(AutoDto)
+    returns (google.protobuf.Empty);
+
 }

@@ -49,36 +49,12 @@ namespace AutoReservation.BusinessLayer
             return IsDateCorrect(von, bis) && IsCarAvailable(autoId, von, bis);
         }
 
-        public async Task<List<Reservation>> getReservations()
+        public async Task<List<Reservation>> GetReservations()
         {
             using AutoReservationContext context = new AutoReservationContext();
 
             return await context.Reservationen.Include(o => o.Auto).Include(o => o.Kunde)
                 .ToListAsync();
-        }
-
-        public void AddReservation(int id, int kundeId, int autoId, DateTime von, DateTime bis)
-        {
-            using AutoReservationContext context = new AutoReservationContext();
-
-            if (IsAvailable(von, bis, autoId))
-            {
-                context.Reservationen.Add(new Reservation{ ReservationsNr = id, KundeId = kundeId, AutoId = autoId, Von = von, Bis = bis });
-                context.SaveChanges();
-            }
-            else
-            {
-                if (!(IsDateCorrect(von, bis)))
-                {
-                    throw new InvalidDateRangeException("Invalid Date range");
-                }
-                else if (!(IsCarAvailable(autoId, von, bis)))
-                {
-                    throw new AutoUnavailableException("car not available");
-                }
-
-            }
-
         }
 
         public void AddReservation(Reservation reservation)
@@ -104,17 +80,16 @@ namespace AutoReservation.BusinessLayer
             }
         }
 
-        public async Task<Reservation> getReservationByPrimary(int Primary)
+        public async Task<Reservation> GetReservationByPrimary(int Primary)
         {
             using AutoReservationContext context = new AutoReservationContext();
             return await context.Reservationen.Include(o => o.Auto).Include(o => o.Kunde)
                     .SingleAsync(c => c.ReservationsNr == Primary);
         }
 
-        public void DeleteReservation(int ReservationId)
+        public void DeleteReservation(Reservation reservation)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            Reservation reservation = context.Reservationen.First(a => a.ReservationsNr == ReservationId);
             context.Entry(reservation).State = EntityState.Deleted;
             context.SaveChanges();
         }
@@ -124,8 +99,7 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if ((reservation.AutoId.Equals(getReservationByPrimary(reservation.ReservationsNr).Id) ||
-                 IsCarAvailable(reservation.AutoId, reservation.Von, reservation.Bis)) && IsDateCorrect(reservation.Von, reservation.Bis)
+            if (IsCarAvailable(reservation.AutoId, reservation.Von, reservation.Bis) && IsDateCorrect(reservation.Von, reservation.Bis)
                  )
             {
                 context.Entry(reservation).State = EntityState.Modified;

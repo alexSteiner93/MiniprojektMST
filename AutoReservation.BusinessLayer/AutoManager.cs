@@ -17,11 +17,10 @@ namespace AutoReservation.BusinessLayer
             return await context.Autos.ToListAsync();
         }
 
-        public void DeleteCar(int CarId)
+        public void DeleteCar(Auto Car)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            Auto car = context.Autos.First(a => a.Id == CarId);
-            context.Entry(car).State = EntityState.Deleted;
+            context.Entry(Car).State = EntityState.Deleted;
             context.SaveChanges();
         }
 
@@ -38,6 +37,15 @@ namespace AutoReservation.BusinessLayer
             using AutoReservationContext context = new AutoReservationContext();
             context.Entry(auto).State = EntityState.Modified;
             context.SaveChanges();
+        }
+
+        public void AddCar(Auto newCar)
+        {
+            using AutoReservationContext context = new AutoReservationContext();
+
+            context.Autos.AddAsync(newCar);
+            context.SaveChanges();
+
         }
     }
 }

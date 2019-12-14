@@ -9,5 +9,69 @@ option csharp_namespace = "AutoReservation.Service.Grpc";
 
 package AutoReservation;
 
+message ReservationDto{
+    int32 ReservationNr = 1;
+    int32 AutoId =2;
+    int32 KundeId =3;
+    google.protobuf.Timestamp Von = 4;
+    google.protobuf.Timestamp Bis = 5;
+    KundeDto Kunde = 6;
+    AutoDto Auto = 7;
+    bytes RowVersion = 8;
+}
+
+
+message ReservationPrimaryRequest{
+    int32 Id = 1;
+
+}
+
+message ReservationAllDto{
+    repeated ReservationDto Reservations = 1;
+
+}
+
+message IsCarAvailableResponse{
+    bool IsAvailable = 1;
+}
+
+message IsDateCorrectResponse{
+    bool IsCorrect = 1;
+}
+
+message IsCarAvailableRequest{
+     int32 AutoId = 1;
+    google.protobuf.Timestamp von = 2;
+    google.protobuf.Timestamp bis = 3;
+}
+
+message IsDateCorrectRequest{
+   
+    google.protobuf.Timestamp von = 1;
+    google.protobuf.Timestamp bis = 2;
+}
+
 service ReservationService {
+
+    rpc IsDateCorrect(IsDateCorrectRequest)
+    returns(IsDateCorrectResponse);
+
+    rpc IsCarAvailable(IsCarAvailableRequest)
+    returns (IsCarAvailableResponse);
+    
+    rpc GetReservationByPrimary(ReservationPrimaryRequest)
+    returns (ReservationDto);
+
+    rpc GetReservations(google.protobuf.Empty)
+    returns (ReservationAllDto);
+
+    rpc UpdateReservation(ReservationDto)
+    returns (google.protobuf.Empty);
+
+    rpc AddReservation(ReservationDto)
+    returns (google.protobuf.Empty);
+
+    rpc DeleteReservation(ReservationDto)
+    returns (google.protobuf.Empty);
+   
 }
