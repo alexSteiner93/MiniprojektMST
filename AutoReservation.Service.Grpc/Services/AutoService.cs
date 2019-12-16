@@ -29,7 +29,7 @@ namespace AutoReservation.Service.Grpc.Services
             return result.ConvertToDto();
         }
 
-        public override async Task<AutosDto> GetAllCars(Empty request, ServerCallContext context)
+        public override async Task<AutoAllDto> GetAllCars(Empty request, ServerCallContext context)
         {
             List<Auto> allCars = await CarManager.GetAllCars();
             List<AutoDto> result = allCars.ConvertToDtos();
