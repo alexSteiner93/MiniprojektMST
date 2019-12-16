@@ -1,4 +1,3 @@
-
 using AutoReservation.BusinessLayer.Exceptions;
 using AutoReservation.Dal.Entities;
 using System.Collections.Generic;
@@ -6,7 +5,6 @@ using System.Threading.Tasks;
 using AutoReservation.BusinessLayer;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-
 using Microsoft.Extensions.Logging;
 
 namespace AutoReservation.Service.Grpc.Services
@@ -14,48 +12,91 @@ namespace AutoReservation.Service.Grpc.Services
     internal class ReservationService : Grpc.ReservationService.ReservationServiceBase
     {
         private readonly ILogger<ReservationService> _logger;
-        private ReservationManager ReservationsManager;
+        private ReservationManager _reservationManager;
 
         public ReservationService(ILogger<ReservationService> logger)
         {
             _logger = logger;
-            ReservationsManager = new ReservationManager();
+            _reservationManager = new ReservationManager();
         }
 
-
-        public override async Task<ReservationAllDto> GetReservations(Empty request, ServerCallContext context)
+        public override async Task<ReservationAllDto> GetAll(Empty request, ServerCallContext context)
         {
 
-            List<Reservation> Reservations = await ReservationsManager.GetReservations();
-            List<ReservationDto> result = Reservations.ConvertToDtos();
-            
-            return result;
+            List<Reservation> reservations = await _reservationManager.GetAll();
+            List<ReservationDto> reservationDtos = reservations.ConvertToDtos();
+            ReservationAllDto reservationAllDto = new ReservationAllDto();
+            foreach(ReservationDto reservationDto in reservationDtos)
+            {
+                reservationAllDto.Reservations.Add(reservationDto);
+            }
+           
+            return reservationAllDto;
         }
 
         public override async Task<ReservationDto> Get(ReservationRequest request, ServerCallContext context)
         {
-            Reservation result = await ReservationsManager.GetReservationByPrimary(request.Id);
+            Reservation result = await _reservationManager.Get(request.Id);
           
             return result.ConvertToDto();
         }
 
-        public override void AddReservation(ReservationDto request, ServerCallContext context)
+        public override async Task<ReservationDto> Insert(ReservationDto request, ServerCallContext context)
         { 
-
-            ReservationsManager.AddReservation(request.ConvertToEntity());
-               
-       
+            try
+            {
+                Reservation newreservation = await _reservationManager.Insert(request.ConvertToEntity());
+                return newreservation.ConvertToDto();
+            }
+            catch (InvalidDateRangeException exception)
+            {
+                throw new RpcException(
+                    new Status(StatusCode.FailedPrecondition, "Reservation must be at least 24h"), 
+                    exception.ToString()
+                );
+            }
+            catch (AutoUnavailableException exception)
+            {
+                throw new RpcException(
+                    new Status(StatusCode.FailedPrecondition, "Car is not available"), 
+                    exception.ToString()
+                );
+            }
         }
 
-        public override void UpdateReservation(ReservationDto request, ServerCallContext context)
+        public override async Task<Empty> Update (ReservationDto request, ServerCallContext context)
         {
-            ReservationsManager.UpdateReservation(request.ConvertToEntity());
+            try
+            {
+                await _reservationManager.Update(request.ConvertToEntity());
+            }
+            catch (OptimisticConcurrencyException<Reservation> exception)
+            {
+                throw new RpcException(
+                    new Status(StatusCode.Aborted, "Concurrency exception"), 
+                    exception.ToString()
+                );
+            }
+            catch (InvalidDateRangeException exception)
+            {
+                throw new RpcException(
+                    new Status(StatusCode.FailedPrecondition, "Reservation must be at least 24h"), 
+                    exception.ToString()
+                );
+            }
+            catch (AutoUnavailableException exception)
+            {
+                throw new RpcException(
+                    new Status(StatusCode.FailedPrecondition, "Car is not available"), 
+                    exception.ToString()
+                );
+            }
+            return new Empty();
         }
-
-        public override void DeleteReservation (ReservationDto request, ServerCallContext context)
+        public override async Task<Empty> Delete (ReservationDto request, ServerCallContext context)
         {
-            ReservationsManager.DeleteReservation(request.ConvertToEntity());
+            await _reservationManager.Delete(request.ConvertToEntity());
+            return new Empty();
         }
-
     }
 }

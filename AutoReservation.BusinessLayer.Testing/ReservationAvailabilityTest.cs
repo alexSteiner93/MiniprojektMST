@@ -22,7 +22,7 @@ namespace AutoReservation.BusinessLayer.Testing
 
         private async Task UpdateContext()
         {
-            _existingReservation = await _target.GetReservationByPrimary(1);
+            _existingReservation = await _target.Get(1);
         }
 
         [Fact]
@@ -32,11 +32,12 @@ namespace AutoReservation.BusinessLayer.Testing
             //| ---Date 1--- |
             //               | ---Date 2--- |
             await UpdateContext();
+
             DateTime von = _existingReservation.Bis.AddDays(1);
             DateTime bis = von.AddDays(2);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.True(IsAvailable);
@@ -53,7 +54,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = von.AddDays(2);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.True(IsAvailable);
@@ -70,7 +71,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime von = bis.AddDays(-2);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.True(IsAvailable);
@@ -87,7 +88,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime von = bis.AddDays(-2);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.True(IsAvailable);
@@ -100,11 +101,11 @@ namespace AutoReservation.BusinessLayer.Testing
             //| ---Date 1--- |
             //    | ---Date 2--- |
             await UpdateContext();
-            DateTime von = _existingReservation.Von.AddDays(2);
-            DateTime bis = _existingReservation.Bis.AddDays(2);
+            DateTime von = _existingReservation.Von.AddDays(1);
+            DateTime bis = _existingReservation.Bis.AddDays(1);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.False(IsAvailable);
@@ -121,7 +122,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = _existingReservation.Bis.AddDays(-2);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.False(IsAvailable);
@@ -138,7 +139,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = _existingReservation.Bis.AddDays(2);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.False(IsAvailable);
@@ -155,7 +156,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = _existingReservation.Bis.AddDays(-1);
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.False(IsAvailable);
@@ -172,7 +173,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = _existingReservation.Bis;
 
             // act
-            bool IsAvailable = _target.IsCarAvailable(_existingReservation.AutoId, von, bis);
+            bool IsAvailable = _target.IsCarAvailable(new Reservation { AutoId = _existingReservation.AutoId, KundeId = _existingReservation.KundeId, Von = von, Bis = bis });
 
             // assert
             Xunit.Assert.False(IsAvailable);

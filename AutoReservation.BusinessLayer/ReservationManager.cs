@@ -19,18 +19,19 @@ namespace AutoReservation.BusinessLayer
 
             return false;
         }
-        public bool IsCarAvailable(int AutoId, DateTime von, DateTime bis)
+        public bool IsCarAvailable(Reservation reservation)
         {
             bool isAvailable = false;
             using AutoReservationContext context = new AutoReservationContext();
-            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(AutoId)).ToList();
+            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(reservation.AutoId)).ToList();
 
             if (reservations.Count == 0) return true;
 
-            foreach (Reservation reservation in reservations)
+            foreach (Reservation existing in reservations)
             {
-                if ((von > reservation.Bis) // after
-                    || (bis < reservation.Von)) // before
+                if ((reservation.Von > existing.Bis) // after
+                    || (reservation.Bis < existing.Von) // before
+                    || (reservation.ReservationsNr == existing.ReservationsNr))
                 {
                     isAvailable = true;
                 } 
@@ -41,15 +42,14 @@ namespace AutoReservation.BusinessLayer
             }
 
             return isAvailable;
-
         }
 
-        public bool IsAvailable (DateTime von, DateTime bis, int autoId)
+        public bool IsAvailable (Reservation reservation)
         {
-            return IsDateCorrect(von, bis) && IsCarAvailable(autoId, von, bis);
+            return IsDateCorrect(reservation.Von, reservation.Bis) && IsCarAvailable(reservation);
         }
 
-        public async Task<List<Reservation>> GetReservations()
+        public async Task<List<Reservation>> GetAll()
         {
             using AutoReservationContext context = new AutoReservationContext();
 
@@ -57,14 +57,15 @@ namespace AutoReservation.BusinessLayer
                 .ToListAsync();
         }
 
-        public void AddReservation(Reservation reservation)
+        public async Task<Reservation> Insert(Reservation reservation)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (IsAvailable(reservation.Von, reservation.Bis, reservation.AutoId))
+            if (IsAvailable(reservation))
             {
                 context.Entry(reservation).State = EntityState.Added;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
+                return reservation;
             }
 
             else
@@ -73,37 +74,43 @@ namespace AutoReservation.BusinessLayer
                 {
                     throw new InvalidDateRangeException("Invalid Date range");
                 }
-                else if (!IsCarAvailable(reservation.AutoId, reservation.Von, reservation.Bis))
+                else if (!IsCarAvailable(reservation))
                 {
                     throw new AutoUnavailableException("car not available");
                 }
+
+                return null;
             }
         }
 
-        public async Task<Reservation> GetReservationByPrimary(int Primary)
+        public async Task<Reservation> Get(int Primary)
         {
             using AutoReservationContext context = new AutoReservationContext();
             return await context.Reservationen.Include(o => o.Auto).Include(o => o.Kunde)
                     .SingleAsync(c => c.ReservationsNr == Primary);
         }
 
-        public void DeleteReservation(Reservation reservation)
+        public async Task<Reservation> Delete(Reservation reservation)
         {
             using AutoReservationContext context = new AutoReservationContext();
             context.Entry(reservation).State = EntityState.Deleted;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return reservation;
         }
 
 
-        public void UpdateReservation(Reservation reservation)
+        public async Task<Reservation> Update(Reservation reservation)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (IsCarAvailable(reservation.AutoId, reservation.Von, reservation.Bis) && IsDateCorrect(reservation.Von, reservation.Bis)
-                 )
+            if (IsAvailable(reservation))
             {
                 context.Entry(reservation).State = EntityState.Modified;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
+                return reservation;
+            } else
+            {
+                return null;
             }
         }
     }

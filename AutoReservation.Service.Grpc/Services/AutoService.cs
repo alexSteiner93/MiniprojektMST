@@ -1,65 +1,77 @@
-
-using AutoReservation.Dal.Entities;
-using Google.Protobuf.WellKnownTypes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoReservation.BusinessLayer;
+using AutoReservation.BusinessLayer.Exceptions;
+using AutoReservation.Dal.Entities;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-
 
 namespace AutoReservation.Service.Grpc.Services
 {
     internal class AutoService : Grpc.AutoService.AutoServiceBase
     {
         private readonly ILogger<AutoService> _logger;
-        private AutoManager CarManager;
 
         public AutoService(ILogger<AutoService> logger)
         {
             _logger = logger;
-
-            CarManager= new AutoManager();
         }
 
-        public override async Task<AutoDto> GetCarByPrimary(AutoRequest request, ServerCallContext context)
+        public override async Task<AutoAllDto> GetAll(Empty request, ServerCallContext context)
         {
-            Auto result = await CarManager.GetCarByPrimary(request.Id);
-       
-            return result.ConvertToDto();
+            AutoManager manager = new AutoManager();
+            List<Auto> allCars = await manager.GetAll();
+            List<AutoDto> dtos = allCars.ConvertToDtos();
+            AutoAllDto autosDto = new AutoAllDto();
+            dtos.ForEach(autoDto => autosDto.Cars.Add(autoDto));
+            return autosDto;
         }
-
-        public override async Task<AutoAllDto> GetAllCars(Empty request, ServerCallContext context)
+        public override async Task<AutoDto> Get(AutoRequest request, ServerCallContext context)
         {
-            List<Auto> allCars = await CarManager.GetAllCars();
-            List<AutoDto> result = allCars.ConvertToDtos();
-            return result;
+            AutoManager manager = new AutoManager();
+            Auto car = await manager.Get(request.Id);
+            if (car == null)
+            {
+                throw new RpcException(new Status(
+                    StatusCode.OutOfRange, "Car not found"
+                ));
+            }
+            return car.ConvertToDto();
         }
 
-        public override void AddCar (AutoDto request, ServerCallContext context)
-        { 
-            Auto result = request.ConvertToEntity();
-            CarManager.AddCar(result);
-            
-        }
-
-        public override void UpdateCar(AutoDto request, ServerCallContext context)
+        public override async Task<AutoDto> Insert(AutoDto request, ServerCallContext context)
         {
-
-            Auto result = request.ConvertToEntity();
-            CarManager.UpdateCar(result);
-
-
+            AutoManager manager = new AutoManager();
+            Auto car = request.ConvertToEntity();
+            Auto newCar = await manager.Insert(car);
+            return newCar.ConvertToDto();
         }
-           
-      
-        public override void DeleteCar(AutoDto request, ServerCallContext context)
+
+        public override async Task<Empty> Update(AutoDto request, ServerCallContext context)
         {
-          
-            CarManager.DeleteCar(request.ConvertToEntity());
-            
+            AutoManager manager = new AutoManager();
+            Auto car = request.ConvertToEntity();
+            try
+            {
+                await manager.Update(car);
+            }
+            catch (OptimisticConcurrencyException<Auto> exception)
+            {
+                throw new RpcException(new Status(
+                    StatusCode.Aborted,
+                    "Conccurency exception"
+                    ), exception.ToString());
+            }
+            return new Empty();
         }
 
-
+        public override async Task<Empty> Delete(AutoDto request, ServerCallContext context)
+        {
+            AutoManager manager = new AutoManager();
+            Auto car = request.ConvertToEntity();
+            await manager.Delete(car);
+            return new Empty();
+        }
     }
 }

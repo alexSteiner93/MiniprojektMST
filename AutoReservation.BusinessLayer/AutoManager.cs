@@ -11,41 +11,47 @@ namespace AutoReservation.BusinessLayer
         : ManagerBase
     {
 
-        public async Task<List<Auto>> GetAllCars()
+        public async Task<List<Auto>> GetAll()
         {
             using AutoReservationContext context = new AutoReservationContext();
             return await context.Autos.ToListAsync();
         }
 
-        public void DeleteCar(Auto Car)
+        public async Task<Auto> Get(int primary)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            context.Entry(Car).State = EntityState.Deleted;
-            context.SaveChanges();
+            return await context.Autos.FindAsync(primary);
         }
 
-        public async Task<Auto> GetCarByPrimary(int primary)
+        public async Task<Auto> Insert(Auto car)
         {
             using AutoReservationContext context = new AutoReservationContext();
-
-            return await context.Autos.SingleAsync(a => a.Id == primary);
-
+            context.Entry(car).State = EntityState.Added;
+            await context.SaveChangesAsync();
+            return car;
         }
 
-        public void UpdateCar(Auto auto)
+        public async Task Update(Auto car)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            context.Entry(auto).State = EntityState.Modified;
-            context.SaveChanges();
+
+            try
+            {
+                context.Entry(car).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw CreateOptimisticConcurrencyException(context, car);
+            }
         }
 
-        public void AddCar(Auto newCar)
+        public async Task<Auto> Delete(Auto car)
         {
             using AutoReservationContext context = new AutoReservationContext();
-
-            context.Autos.AddAsync(newCar);
-            context.SaveChanges();
-
+            context.Entry(car).State = EntityState.Deleted;
+            await context.SaveChangesAsync();
+            return car;
         }
     }
 }

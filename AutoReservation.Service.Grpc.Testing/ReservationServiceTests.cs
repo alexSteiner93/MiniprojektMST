@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoReservation.Service.Grpc.Testing.Common;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Xunit;
@@ -25,9 +26,9 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetReservationenTest()
         {
-            ReservationAllDto result = _target.GetReservations(new Empty());
-
-            Assert.Equal(4, result.Count);
+            ReservationAllDto result =  _target.GetAll(new Empty());
+            RepeatedField<ReservationDto> reservationDtos = result.Reservations;
+            Assert.Equal(4, reservationDtos.Count);
         }
 
         [Fact]

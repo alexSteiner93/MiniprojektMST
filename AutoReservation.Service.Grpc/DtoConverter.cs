@@ -116,7 +116,7 @@ namespace AutoReservation.Service.Grpc
 
             Reservation reservation = new Reservation
             {
-                ReservationsNr = dto.ReservationsNr,
+                ReservationsNr = dto.ReservationNr,
                 Von = dto.Von.ToDateTime(),
                 Bis = dto.Bis.ToDateTime(),
                 AutoId = dto.Auto.Id,
@@ -135,7 +135,7 @@ namespace AutoReservation.Service.Grpc
 
             return new ReservationDto
             {
-                ReservationsNr = entity.ReservationsNr,
+                ReservationNr = entity.ReservationsNr,
                 Von = entity.Von.ToTimestampUtcFaked(),
                 Bis = entity.Bis.ToTimestampUtcFaked(),
                 RowVersion = ByteString.CopyFrom(entity.RowVersion ?? new byte[0]),

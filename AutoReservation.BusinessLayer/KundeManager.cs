@@ -11,46 +11,49 @@ namespace AutoReservation.BusinessLayer
     public class KundeManager
         : ManagerBase
     {
-        public async Task<List<Kunde>> GetClients()
+        public async Task<List<Kunde>> GetAll()
         {
             using AutoReservationContext context = new AutoReservationContext();
          
                return await context.Kunden.ToListAsync();
-            
         }
 
-        public async Task<Kunde> GetCientById(int ClientId)
+        public async Task<Kunde> Get(int clientId)
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            return await context.Kunden.SingleAsync(c => c.Id == ClientId);
+            return await context.Kunden.SingleAsync(c => c.Id == clientId);
         }
 
-        public void UpdateClient(Kunde Client)
+        public async Task<Kunde> Insert(Kunde client)
         {
             using AutoReservationContext context = new AutoReservationContext();
-                context.Entry(Client).State = EntityState.Modified;
-                context.SaveChanges();
-            
+            context.Entry(client).State = EntityState.Added;
+            await context.SaveChangesAsync();
+            return client;
         }
 
-        public void DeleteClient(Kunde Client)
+        public async Task Update(Kunde client)
         {
             using AutoReservationContext context = new AutoReservationContext();
-         
-                context.Kunden.Remove(Client);
-                context.SaveChanges();
-            
+            try
+            {
+                context.Entry(client).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw CreateOptimisticConcurrencyException(context, client);
+            }
+
         }
 
-
-        public void AddClient(Kunde newClient)
+        public async Task<Kunde> Delete(Kunde client)
         {
             using AutoReservationContext context = new AutoReservationContext();
-
-            context.Kunden.AddAsync(newClient);
-            context.SaveChanges();
-
+            context.Entry(client).State = EntityState.Deleted;
+            await context.SaveChangesAsync();
+            return client;
         }
     }
 }

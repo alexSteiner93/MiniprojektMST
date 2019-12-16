@@ -19,11 +19,11 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public async Task UpdateKundeTest()
         {
-            Kunde customer = await _target.GetCientById(1);
+            Kunde customer = await _target.Get(1);
             customer.Vorname = "Hansruedi";
 
-            _target.UpdateClient(customer);
-            customer = await _target.GetCientById(1);
+            await _target.Update(customer);
+            customer = await _target.Get(1);
 
             Xunit.Assert.Equal("Hansruedi", customer.Vorname);
         }

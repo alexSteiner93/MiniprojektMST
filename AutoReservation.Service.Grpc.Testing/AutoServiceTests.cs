@@ -25,18 +25,18 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetAutosTest()
         {
+            AutoAllDto result = _target.GetAll(new Empty());
+            RepeatedField<AutoDto> autoDtos = result.Cars;
 
-            AutosDto result = _target.GetAllCars(new Empty());
-
-            Assert.Equal(4, result.Count);
+            Assert.Equal(4, autoDtos.Count);
         }
 
         [Fact]
         public async Task GetAutoByIdTest()
         {
-            AutoDto result = _target.Get(new AutoRequest { Id = 1 });
+            AutoDto result =  _target.Get(new AutoRequest { Id = 1 });
 
-            Assert.Equal(result.Tagestarif, 50);
+            Assert.Equal(50, result.Tagestarif);
         }
 
         [Fact]
@@ -51,15 +51,18 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task InsertAutoTest()
         {
-            AutoDto result = new AutoDto();
-            result.Marke = "Ferrari";
-            result.Tagestarif = 10000;
-            result.AutoKlasse = AutoKlasse.Luxusklasse;
-            result.Basistarif = 100;
+            // arrange
+            AutoDto car = new AutoDto();
+            car.Marke = "Ferrari";
+            car.Tagestarif = 10000;
+            car.AutoKlasse = AutoKlasse.Luxusklasse;
+            car.Basistarif = 100;
 
-            _target.AddCar();
+            // act
+            AutoDto newCar = _target.Insert(car);
+            AutoDto actual = _target.Get(new AutoRequest { Id = newCar.Id });
 
-            Assert.Equal(_target.GetCarByPrimary(5).Tagestarif, 10000);
+            Assert.Equal(10000, actual.Basistarif);
         }
 
         [Fact]
