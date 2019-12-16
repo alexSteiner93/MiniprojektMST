@@ -62,7 +62,7 @@ namespace AutoReservation.Service.Grpc.Testing
             AutoDto newCar = _target.Insert(car);
             AutoDto actual = _target.Get(new AutoRequest { Id = newCar.Id });
 
-            Assert.Equal(10000, actual.Basistarif);
+            Assert.Equal(10000, actual.Tagestarif);
         }
 
         [Fact]

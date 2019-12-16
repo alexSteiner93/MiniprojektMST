@@ -17,14 +17,16 @@ namespace AutoReservation.Service.Grpc.Testing.Common
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                        .UseUrls("https://localhost:50001")
+                        .UseUrls("http://localhost:50001")
                         .UseStartup<Startup>();
                 })
                 .Build();
-            
+
             _host.Start();
 
-            Channel = GrpcChannel.ForAddress("https://localhost:50001");
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+            Channel = GrpcChannel.ForAddress("http://localhost:50001");
         }
 
         public void Dispose()
