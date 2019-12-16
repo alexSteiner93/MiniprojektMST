@@ -25,10 +25,9 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetReservationenTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationAllDto result = _target.GetReservations(new Empty());
+
+            Assert.Equal(4, result.Count);
         }
 
         [Fact]

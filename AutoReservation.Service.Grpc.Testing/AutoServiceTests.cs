@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoReservation.BusinessLayer.Exceptions;
+using AutoReservation.Dal.Entities;
 using AutoReservation.Service.Grpc.Testing.Common;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Xunit;
@@ -22,19 +25,18 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetAutosTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+
+            AutosDto result = _target.GetAllCars(new Empty());
+
+            Assert.Equal(4, result.Count);
         }
 
         [Fact]
         public async Task GetAutoByIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            AutoDto result = _target.Get(new AutoRequest { Id = 1 });
+
+            Assert.Equal(result.Tagestarif, 50);
         }
 
         [Fact]
@@ -49,10 +51,15 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task InsertAutoTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            AutoDto result = new AutoDto();
+            result.Marke = "Ferrari";
+            result.Tagestarif = 10000;
+            result.AutoKlasse = AutoKlasse.Luxusklasse;
+            result.Basistarif = 100;
+
+            _target.AddCar();
+
+            Assert.Equal(_target.GetCarByPrimary(5).Tagestarif, 10000);
         }
 
         [Fact]

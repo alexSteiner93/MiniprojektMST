@@ -21,19 +21,18 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetKundenTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            KundeAllDto result = _target.GetClients(new Empty());
+
+            Assert.Equal(4, result.Count);
         }
 
         [Fact]
         public async Task GetKundeByIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            KundeDto result = _target.GetClientById(new KundeRequest { Id = 1 });
+
+            Assert.Equal(result.Vorname, "Anna");
+
         }
 
         [Fact]
