@@ -20,42 +20,40 @@ namespace AutoReservation.Service.Grpc.Services
 
         public override async Task<KundeAllDto> GetAll(Empty request, ServerCallContext context)
         {
-            KundeManager manager = new KundeManager();
-            List<Kunde> allCustomers = await manager.GetAll();
-            List<KundeDto> customerDtos = allCustomers.ConvertToDtos();
-            KundeAllDto customersDto = new KundeAllDto();
-            customerDtos.ForEach(kundeDto => customersDto.Clients.Add(kundeDto));
-            return customersDto;
+            KundeManager ClientManager = new KundeManager();
+            List<KundeDto> temp = await ClientManager.GetAll().ConvertToDtos();
+            KundeAllDto result = new KundeAllDto();
+            temp.ForEach(kundeDto => result.Clients.Add(kundeDto));
+            return result;
         }
 
         public override async Task<KundeDto> Get(KundeRequest request, ServerCallContext context)
         {
-            KundeManager manager = new KundeManager();
-            Kunde customer = await manager.Get(request.Id);
-            if (customer == null)
+            KundeManager ClientManager = new KundeManager();
+            Kunde result = await ClientManager.Get(request.Id);
+            if (result == null)
             {
                 throw new RpcException(new Status(
                     StatusCode.OutOfRange, "Id couldn't be found."
                 ));
             }
-            return customer.ConvertToDto();
+            return result.ConvertToDto();
         }
 
         public override async Task<KundeDto> Insert(KundeDto request, ServerCallContext context)
         {
-            KundeManager manager = new KundeManager();
-            Kunde kunde = request.ConvertToEntity();
-            Kunde newKunde = await manager.Insert(kunde);
-            return newKunde.ConvertToDto();
+            KundeManager ClientManager = new KundeManager();
+            Kunde result = await ClientManager.Insert(request.ConvertToEntity());
+            return result.ConvertToDto();
         }
 
         public override async Task<Empty> Update(KundeDto request, ServerCallContext context)
         {
-            KundeManager manager = new KundeManager();
-            Kunde kunde = request.ConvertToEntity();
+            KundeManager ClientManager = new KundeManager();
+          
             try
             {
-                await manager.Update(kunde);
+                await ClientManager.Update(request.ConvertToEntity());
             }
             catch (OptimisticConcurrencyException<Kunde> exception)
             { 
@@ -69,9 +67,9 @@ namespace AutoReservation.Service.Grpc.Services
 
         public override async Task<Empty> Delete(KundeDto request, ServerCallContext context)
         {
-            KundeManager manager = new KundeManager();
-            Kunde kunde = request.ConvertToEntity();
-            await manager.Delete(kunde);
+            KundeManager CLientManager = new KundeManager();
+           
+            await CLientManager.Delete(request.ConvertToEntity());
             return new Empty();
         }
     }

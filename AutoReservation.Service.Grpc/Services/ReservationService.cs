@@ -23,22 +23,20 @@ namespace AutoReservation.Service.Grpc.Services
         public override async Task<ReservationAllDto> GetAll(Empty request, ServerCallContext context)
         {
 
-            List<Reservation> reservations = await _reservationManager.GetAll();
-            List<ReservationDto> reservationDtos = reservations.ConvertToDtos();
-            ReservationAllDto reservationAllDto = new ReservationAllDto();
-            foreach(ReservationDto reservationDto in reservationDtos)
+            List<ReservationDto> temp = await _reservationManager.GetAll().ConvertToDtos();
+            ReservationAllDto result = new ReservationAllDto();
+            foreach(ReservationDto reservationDto in temp)
             {
-                reservationAllDto.Reservations.Add(reservationDto);
+                result.Reservations.Add(reservationDto);
             }
            
-            return reservationAllDto;
+            return result;
         }
 
         public override async Task<ReservationDto> Get(ReservationRequest request, ServerCallContext context)
         {
-            Reservation result = await _reservationManager.Get(request.Id);
           
-            return result.ConvertToDto();
+            return await _reservationManager.Get(request.Id).ConvertToDto();
         }
 
         public override async Task<ReservationDto> Insert(ReservationDto request, ServerCallContext context)

@@ -34,28 +34,41 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetReservationByIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationDto result = _target.Get(new ReservationRequest { Id = 1 });
+
+            Assert.Equal(result.Auto.Tagestarif, 50);
         }
 
         [Fact]
         public async Task GetReservationByIdWithIllegalIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationDto result = _target.Get(new ReservationRequest { Id = -1 });
+
+            Assert.Throws<RpcException>(() => _target.Get(result));
         }
 
         [Fact]
         public async Task InsertReservationTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            KundeDto client = new KundeDto { Nachname = "Weber", Vorname = "Franz" };
+            AutoDto car = new AutoDto();
+            car.Marke = "Ferrari";
+            car.Tagestarif = 10000;
+            car.AutoKlasse = AutoKlasse.Luxusklasse;
+            car.Basistarif = 100;
+            Timestamp von = Timestamp.FromDateTime(new DateTime(2019, 12, 23, 0, 0, 0, DateTimeKind.Utc));
+            Timestamp bis = Timestamp.FromDateTime(new DateTime(2019, 12, 26, 0, 0, 0, DateTimeKind.Utc));
+            ReservationDto result = new ReservationDto();
+            result.Von = von;
+            result.Bis = bis;
+            result.Auto = car;
+            result.Kunde = client;
+
+            ReservationDto backDto = _target.Insert(result);
+
+            Assert.Equal(_target.Get(new ReservationRequest { Id = backDto.ReservationsNr }).Tagestarif, 10000);
+
+
         }
 
         [Fact]
