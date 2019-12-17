@@ -74,46 +74,72 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task DeleteReservationTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationDto toDelete = _target.Get(new ReservationRequest { Id = 1 });
+            _target.Delete(toDelete);
+
+            Assert.Throws<RpcException>(() => _target.Get(toDelete));
         }
 
         [Fact]
         public async Task UpdateReservationTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            string newModel = "asdf";
+            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
+            toUpdate.Auto.Marke = newModel;
+            _target.Update(toUpdate);
+
+            Assert.Equal(newModel, _target.Get(toUpdate).Marke);
+
+
         }
 
         [Fact]
         public async Task UpdateReservationWithOptimisticConcurrencyTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
+            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
+            AutoDto concurrentReservation = _target.Get(toUpdate);
+
             // act
+            _target.Update(concurrentReservation);
+
             // assert
+            Assert.Throws<RpcException>(() => _target.Update(toUpdate));
         }
 
         [Fact]
         public async Task InsertReservationWithInvalidDateRangeTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+         
+            KundeDto kundeDto = _kundeClient.Get(new KundeRequest { Id = 2 });
+            AutoDto autoDto = _autoClient.Get(new AutoRequest { Id = 2 });
+            Timestamp von = Timestamp.FromDateTime(new DateTime(2020, 4, 10, 00, 00, 00, DateTimeKind.Utc));
+            Timestamp bis = Timestamp.FromDateTime(new DateTime(2002, 10, 05, 00, 00, 00, DateTimeKind.Utc));
+
+            ReservationDto reservationInvalid = new ReservationDto();
+            reservationInvalid.Von = von;
+            reservationInvalid.Bis = bis;
+            reservationInvalid.Kunde = kundeDto;
+            reservationInvalid.Auto = autoDto;
+
+            Assert.Throws<RpcException>(() => _target.Insert(reservationInvalid));
         }
 
         [Fact]
         public async Task InsertReservationWithAutoNotAvailableTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationDto reservationInvalid = new ReservationDto();
+            Timestamp Von = Timestamp.FromDateTime(new DateTime(2019, 12, 13, 0, 0, 0, DateTimeKind.Utc));
+            Timestamp Bis = Timestamp.FromDateTime(new DateTime(2019, 12, 20, 0, 0, 0, DateTimeKind.Utc));
+            KundeDto Client = _kundeClient.Get(new KundeRequest { Id = 4 });
+            AutoDto Car = _autoClient.Get(new AutoRequest { Id = 4 });
+
+            reservationInvalid.Von = Von;
+            reservationInvalid.Bis = Bis;
+            reservationInvalid.Kunde = Client;
+            reservationInvalid.Auto = Car;
+
+            Assert.Throws<RpcException>(() => _target.Insert(reservationInvalid));
+
         }
 
         [Fact]
