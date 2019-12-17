@@ -52,7 +52,7 @@ service ReservationService {
     rpc IsDateCorrect(IsDateCorrectRequest)
     returns(IsDateCorrectResponse);
 
-    rpc IsCarAvailable(IsCarAvailableRequest)
+    rpc IsCarAvailable(ReservationDto)
     returns (IsCarAvailableResponse);
     
     rpc Get (ReservationRequest)

@@ -145,37 +145,70 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task UpdateReservationWithInvalidDateRangeTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            Timestamp von = Timestamp.FromDateTime(new DateTime(2020, 4, 10, 00, 00, 00, DateTimeKind.Utc));
+            Timestamp bis = Timestamp.FromDateTime(new DateTime(2002, 10, 05, 00, 00, 00, DateTimeKind.Utc));
+            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
+            toUpdate.Von = von;
+            toUpdate.Bis = bis;
+
+            Assert.Throws<RpcException>(() => _target.Update(toUpdate));
+
+
+
+
         }
 
         [Fact]
         public async Task UpdateReservationWithAutoNotAvailableTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
+            KundeDto Client = _kundeClient.Get(new KundeRequest { Id = 4 });
+            AutoDto Car = _autoClient.Get(new AutoRequest { Id = 4 });
+
+            toUpdate.Kunde = Client;
+            toUpdate.Auto = Car;
+
+            Assert.Throws<RpcException>(() => _target.Update(toUpdate));
+
+
         }
 
         [Fact]
         public async Task CheckAvailabilityIsTrueTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationDto ReservationResult = new ReservationDto();
+            Timestamp Von = Timestamp.FromDateTime(new DateTime(2021, 09, 13, 0, 0, 0, DateTimeKind.Utc));
+            Timestamp Bis = Timestamp.FromDateTime(new DateTime(2021, 09, 20, 0, 0, 0, DateTimeKind.Utc));
+            KundeDto Client = _kundeClient.Get(new KundeRequest { Id = 2 });
+            AutoDto Car = _autoClient.Get(new AutoRequest { Id = 2 });
+
+            ReservationResult.Von = Von;
+            ReservationResult.Bis = Bis;
+            ReservationResult.Kunde = Client;
+            ReservationResult.Auto = Car;
+
+            IsCarAvailableResponse result = _target.IsCarAvailable(ReservationResult);
+
+            Assert.True(result.IsAvailable);
         }
 
         [Fact]
         public async Task CheckAvailabilityIsFalseTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            ReservationDto ReservationResult = new ReservationDto();
+            Timestamp Von = Timestamp.FromDateTime(new DateTime(2020, 01, 10, 0, 0, 0, DateTimeKind.Utc));
+            Timestamp Bis = Timestamp.FromDateTime(new DateTime(2020, 01, 20, 0, 0, 0, DateTimeKind.Utc));
+            KundeDto Client = _kundeClient.Get(new KundeRequest { Id = 0 });
+            AutoDto Car = _autoClient.Get(new AutoRequest { Id = 0 });
+
+            ReservationResult.Von = Von;
+            ReservationResult.Bis = Bis;
+            ReservationResult.Kunde = Client;
+            ReservationResult.Auto = Car;
+
+            IsCarAvailableResponse result = _target.IsCarAvailable(ReservationResult);
+
+            Assert.False(result.IsAvailable);
         }
     }
 }
