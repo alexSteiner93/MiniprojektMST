@@ -33,8 +33,9 @@ namespace AutoReservation.Service.Grpc.Services
             Auto car = await manager.Get(request.Id);
             if (car == null)
             {
-                throw new RpcException(new Status(
-                    StatusCode.OutOfRange, "Car not found"
+                throw new RpcException(
+                    new Status(StatusCode.OutOfRange, 
+                    "Car not found"
                 ));
             }
             return car.ConvertToDto();
@@ -58,10 +59,10 @@ namespace AutoReservation.Service.Grpc.Services
             }
             catch (OptimisticConcurrencyException<Auto> exception)
             {
-                throw new RpcException(new Status(
-                    StatusCode.Aborted,
-                    "Conccurency exception"
-                    ), exception.ToString());
+                throw new RpcException(
+                    new Status(StatusCode.Aborted,"Concurrency exception"), 
+                    exception.ToString()
+                );
             }
             return new Empty();
         }

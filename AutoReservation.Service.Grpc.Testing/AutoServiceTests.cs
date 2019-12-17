@@ -42,13 +42,16 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetAutoByIdWithIllegalIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            AutoRequest toGet = new AutoRequest { Id = -1 };
+
             // act
+
             // assert
+            Assert.Throws<RpcException>(() => _target.Get(toGet));
         }
 
-        [Fact]
+        [Fact] 
         public async Task InsertAutoTest()
         {
             // arrange
@@ -68,28 +71,46 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task DeleteAutoTest()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            AutoRequest toDelete = new AutoRequest { Id = 1 };
+            AutoDto car = _target.Get(toDelete);
+
             // act
+            _target.Delete(car);
+
             // assert
+            Assert.Throws<RpcException>(() => _target.Get(toDelete));
         }
 
         [Fact]
         public async Task UpdateAutoTest()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            string newModel = "asdf";
+            AutoRequest toUpdate = new AutoRequest { Id = 1 };
+            AutoDto car = _target.Get(toUpdate);
+
             // act
+            car.Marke = newModel;
+            _target.Update(car);
+
             // assert
+            Assert.Equal(newModel,  _target.Get(toUpdate).Marke);
         }
 
         [Fact]
         public async Task UpdateAutoWithOptimisticConcurrencyTest()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            AutoRequest toUpdate = new AutoRequest { Id = 1 };
+            AutoDto car = _target.Get(toUpdate);
+            AutoDto concurrentCar = _target.Get(toUpdate);
+
             // act
+            _target.Update(concurrentCar);
+
             // assert
+            Assert.Throws<RpcException>(() =>  _target.Update(car));
         }
     }
 }
