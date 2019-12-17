@@ -59,10 +59,10 @@ namespace AutoReservation.Service.Grpc.Services
             }
             catch (OptimisticConcurrencyException<Kunde> exception)
             { 
-                throw new RpcException(new Status(
-                    StatusCode.Aborted,
-                    "Conccurency Exception."
-                ), exception.ToString());
+                throw new RpcException(
+                    new Status(StatusCode.Aborted,
+                    "Conccurency Exception."),
+                    exception.ToString());
             }
             return new Empty();
         }

@@ -34,7 +34,6 @@ namespace AutoReservation.BusinessLayer
         public async Task Update(Auto car)
         {
             using AutoReservationContext context = new AutoReservationContext();
-
             try
             {
                 context.Entry(car).State = EntityState.Modified;

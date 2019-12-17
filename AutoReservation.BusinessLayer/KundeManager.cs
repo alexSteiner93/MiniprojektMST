@@ -45,7 +45,6 @@ namespace AutoReservation.BusinessLayer
             {
                 throw CreateOptimisticConcurrencyException(context, client);
             }
-
         }
 
         public async Task<Kunde> Delete(Kunde client)
