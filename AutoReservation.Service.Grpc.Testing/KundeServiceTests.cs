@@ -42,8 +42,6 @@ namespace AutoReservation.Service.Grpc.Testing
             // arrange
             KundeRequest toGet = new KundeRequest { Id = -1 };
 
-            // act
-
             // assert
             Assert.Throws<RpcException>(() => _target.Get(toGet));
         }

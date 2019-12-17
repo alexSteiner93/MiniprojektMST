@@ -64,17 +64,8 @@ namespace AutoReservation.Service.Grpc.Services
 
         public override async Task<IsCarAvailableResponse> IsCarAvailable(ReservationDto request, ServerCallContext context)
         {
-            
             Reservation result = request.ConvertToEntity();
-            try
-            {
-                bool isCarAvailable =  _reservationManager.IsCarAvailable(result);
-                return new IsCarAvailableResponse { IsAvailable = isCarAvailable };
-            }
-            catch
-            {
-                return new IsCarAvailableResponse { IsAvailable = false };
-            }
+            return new IsCarAvailableResponse { IsAvailable = _reservationManager.IsCarAvailable(result) };
         }
 
         public override async Task<Empty> Update (ReservationDto request, ServerCallContext context)

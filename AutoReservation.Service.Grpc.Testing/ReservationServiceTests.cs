@@ -36,80 +36,86 @@ namespace AutoReservation.Service.Grpc.Testing
         {
             ReservationDto result = _target.Get(new ReservationRequest { Id = 1 });
 
-            Assert.Equal(result.Auto.Tagestarif, 50);
+            Assert.Equal(50, result.Auto.Tagestarif);
         }
 
         [Fact]
         public async Task GetReservationByIdWithIllegalIdTest()
         {
-            ReservationDto result = _target.Get(new ReservationRequest { Id = -1 });
+            // arrange
+            ReservationRequest toGet = new ReservationRequest { Id = -1 };
 
-            Assert.Throws<RpcException>(() => _target.Get(result));
+            // assert
+            Assert.Throws<RpcException>(() => _target.Get(toGet));
         }
 
         [Fact]
         public async Task InsertReservationTest()
         {
-            KundeDto client = new KundeDto { Nachname = "Weber", Vorname = "Franz" };
-            AutoDto car = new AutoDto();
-            car.Marke = "Ferrari";
-            car.Tagestarif = 10000;
-            car.AutoKlasse = AutoKlasse.Luxusklasse;
-            car.Basistarif = 100;
+            // arrange
+            KundeDto client = _kundeClient.Get(new KundeRequest { Id = 1 });
+            AutoDto car = _autoClient.Get(new AutoRequest { Id = 1 });
+           
             Timestamp von = Timestamp.FromDateTime(new DateTime(2019, 12, 23, 0, 0, 0, DateTimeKind.Utc));
             Timestamp bis = Timestamp.FromDateTime(new DateTime(2019, 12, 26, 0, 0, 0, DateTimeKind.Utc));
-            ReservationDto result = new ReservationDto();
-            result.Von = von;
-            result.Bis = bis;
-            result.Auto = car;
-            result.Kunde = client;
-
-            ReservationDto backDto = _target.Insert(result);
-
-            Assert.Equal(_target.Get(new ReservationRequest { Id = backDto.ReservationsNr }).Tagestarif, 10000);
-
-
+            
+            // act
+            ReservationDto reservation = new ReservationDto {Auto = car, Kunde = client, Von = von, Bis = bis };
+            ReservationDto result = _target.Insert(reservation);
+            
+            // assert
+            Assert.NotNull(result);
         }
 
         [Fact]
         public async Task DeleteReservationTest()
         {
-            ReservationDto toDelete = _target.Get(new ReservationRequest { Id = 1 });
-            _target.Delete(toDelete);
+            // arrange
+            ReservationRequest toDelete = new ReservationRequest { Id = 1 };
+            ReservationDto reservation = _target.Get(toDelete);
 
+            // act
+            _target.Delete(reservation);
+
+            // assert
             Assert.Throws<RpcException>(() => _target.Get(toDelete));
         }
 
         [Fact]
         public async Task UpdateReservationTest()
         {
-            string newModel = "asdf";
-            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
-            toUpdate.Auto.Marke = newModel;
-            _target.Update(toUpdate);
+            // arrange
+            ReservationRequest toUpdate = new ReservationRequest { Id = 1 };
+            ReservationDto reservation = _target.Get(toUpdate);
+            DateTime bis = reservation.Bis.ToDateTime();
 
-            Assert.Equal(newModel, _target.Get(toUpdate).Marke);
+            // act
+            reservation.Bis = bis.AddDays(1).ToTimestamp();
+            _target.Update(reservation);
 
-
+            // assert
+            Assert.Equal(bis.AddDays(1).ToTimestamp(), _target.Get(toUpdate).Bis);
         }
 
         [Fact]
         public async Task UpdateReservationWithOptimisticConcurrencyTest()
         {
-            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
-            AutoDto concurrentReservation = _target.Get(toUpdate);
+            // arrange
+            ReservationRequest toUpdate = new ReservationRequest { Id = 1 };
+            ReservationDto reservation = _target.Get(toUpdate);
+            ReservationDto concurrentReservation = _target.Get(toUpdate);
 
             // act
             _target.Update(concurrentReservation);
 
             // assert
-            Assert.Throws<RpcException>(() => _target.Update(toUpdate));
+            Assert.Throws<RpcException>(() => _target.Update(reservation));
         }
 
         [Fact]
         public async Task InsertReservationWithInvalidDateRangeTest()
         {
-         
+            // arrange 
             KundeDto kundeDto = _kundeClient.Get(new KundeRequest { Id = 2 });
             AutoDto autoDto = _autoClient.Get(new AutoRequest { Id = 2 });
             Timestamp von = Timestamp.FromDateTime(new DateTime(2020, 4, 10, 00, 00, 00, DateTimeKind.Utc));
@@ -121,61 +127,58 @@ namespace AutoReservation.Service.Grpc.Testing
             reservationInvalid.Kunde = kundeDto;
             reservationInvalid.Auto = autoDto;
 
+            // assert
             Assert.Throws<RpcException>(() => _target.Insert(reservationInvalid));
         }
 
         [Fact]
         public async Task InsertReservationWithAutoNotAvailableTest()
         {
-            ReservationDto reservationInvalid = new ReservationDto();
-            Timestamp Von = Timestamp.FromDateTime(new DateTime(2019, 12, 13, 0, 0, 0, DateTimeKind.Utc));
-            Timestamp Bis = Timestamp.FromDateTime(new DateTime(2019, 12, 20, 0, 0, 0, DateTimeKind.Utc));
-            KundeDto Client = _kundeClient.Get(new KundeRequest { Id = 4 });
-            AutoDto Car = _autoClient.Get(new AutoRequest { Id = 4 });
+            // arrange
+            ReservationRequest existingRequest = new ReservationRequest { Id = 1 };
+            ReservationDto existingDto = _target.Get(existingRequest);
+            
+            ReservationDto reservationInvalid = new ReservationDto {Auto = existingDto.Auto, Kunde = existingDto.Kunde, Von = existingDto.Von, Bis = existingDto.Bis };
 
-            reservationInvalid.Von = Von;
-            reservationInvalid.Bis = Bis;
-            reservationInvalid.Kunde = Client;
-            reservationInvalid.Auto = Car;
 
+            // assert
             Assert.Throws<RpcException>(() => _target.Insert(reservationInvalid));
-
         }
 
         [Fact]
         public async Task UpdateReservationWithInvalidDateRangeTest()
         {
-            Timestamp von = Timestamp.FromDateTime(new DateTime(2020, 4, 10, 00, 00, 00, DateTimeKind.Utc));
-            Timestamp bis = Timestamp.FromDateTime(new DateTime(2002, 10, 05, 00, 00, 00, DateTimeKind.Utc));
-            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
-            toUpdate.Von = von;
-            toUpdate.Bis = bis;
+            // arrange
+            ReservationRequest existingRequest = new ReservationRequest { Id = 1 };
+            ReservationDto existingDto = _target.Get(existingRequest);
+            Timestamp von = existingDto.Bis;
+            Timestamp bis = existingDto.Von;
 
-            Assert.Throws<RpcException>(() => _target.Update(toUpdate));
+            existingDto.Von = von;
+            existingDto.Bis = bis;
 
-
-
-
+            // assert
+            Assert.Throws<RpcException>(() => _target.Update(existingDto));
         }
 
         [Fact]
         public async Task UpdateReservationWithAutoNotAvailableTest()
         {
-            ReservationDto toUpdate = _target.Get(new ReservationRequest { Id = 1 });
-            KundeDto Client = _kundeClient.Get(new KundeRequest { Id = 4 });
-            AutoDto Car = _autoClient.Get(new AutoRequest { Id = 4 });
+            // arrange
+            ReservationRequest existingRequest = new ReservationRequest { Id = 1 };
+            ReservationDto existingDto = _target.Get(existingRequest);
 
-            toUpdate.Kunde = Client;
-            toUpdate.Auto = Car;
-
-            Assert.Throws<RpcException>(() => _target.Update(toUpdate));
+            ReservationDto reservationInvalid = new ReservationDto { Auto = existingDto.Auto, Kunde = existingDto.Kunde, Von = existingDto.Von, Bis = existingDto.Bis };
 
 
+            // assert
+            Assert.Throws<RpcException>(() => _target.Insert(reservationInvalid));
         }
 
         [Fact]
         public async Task CheckAvailabilityIsTrueTest()
         {
+            // arrange
             ReservationDto ReservationResult = new ReservationDto();
             Timestamp Von = Timestamp.FromDateTime(new DateTime(2021, 09, 13, 0, 0, 0, DateTimeKind.Utc));
             Timestamp Bis = Timestamp.FromDateTime(new DateTime(2021, 09, 20, 0, 0, 0, DateTimeKind.Utc));
@@ -187,28 +190,27 @@ namespace AutoReservation.Service.Grpc.Testing
             ReservationResult.Kunde = Client;
             ReservationResult.Auto = Car;
 
+            // act
             IsCarAvailableResponse result = _target.IsCarAvailable(ReservationResult);
 
+            // assert
             Assert.True(result.IsAvailable);
         }
 
         [Fact]
         public async Task CheckAvailabilityIsFalseTest()
         {
-            ReservationDto ReservationResult = new ReservationDto();
-            Timestamp Von = Timestamp.FromDateTime(new DateTime(2020, 01, 10, 0, 0, 0, DateTimeKind.Utc));
-            Timestamp Bis = Timestamp.FromDateTime(new DateTime(2020, 01, 20, 0, 0, 0, DateTimeKind.Utc));
-            KundeDto Client = _kundeClient.Get(new KundeRequest { Id = 0 });
-            AutoDto Car = _autoClient.Get(new AutoRequest { Id = 0 });
+            // arrange
+            ReservationRequest existingRequest = new ReservationRequest { Id = 1 };
+            ReservationDto existingDto = _target.Get(existingRequest);
 
-            ReservationResult.Von = Von;
-            ReservationResult.Bis = Bis;
-            ReservationResult.Kunde = Client;
-            ReservationResult.Auto = Car;
+            ReservationDto reservation = new ReservationDto { Auto = existingDto.Auto, Kunde = existingDto.Kunde, Von = existingDto.Von, Bis = existingDto.Bis };
 
-            IsCarAvailableResponse result = _target.IsCarAvailable(ReservationResult);
+            // act
+            bool availability = _target.IsCarAvailable(reservation).IsAvailable;
 
-            Assert.False(result.IsAvailable);
+            // assert
+            Assert.False(availability);
         }
     }
 }
