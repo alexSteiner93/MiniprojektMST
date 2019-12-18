@@ -54,12 +54,6 @@ service ReservationService {
 
     rpc IsCarAvailable(ReservationDto)
     returns (IsCarAvailableResponse);
-    
-    rpc Get (ReservationRequest)
-    returns (ReservationDto);
-
-    rpc GetAll (google.protobuf.Empty)
-    returns (ReservationAllDto);
 
     rpc Insert (ReservationDto)
     returns (ReservationDto);
@@ -69,4 +63,10 @@ service ReservationService {
 
     rpc Delete (ReservationDto)
     returns (google.protobuf.Empty);
+
+    rpc Get (ReservationRequest)
+    returns (ReservationDto);
+
+    rpc GetAll (google.protobuf.Empty)
+    returns (ReservationAllDto);
 }

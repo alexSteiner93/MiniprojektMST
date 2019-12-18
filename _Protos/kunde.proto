@@ -24,11 +24,6 @@ message KundeAllDto {
 }
 
 service KundeService {
-    rpc GetAll(google.protobuf.Empty)
-    returns (KundeAllDto);
-
-    rpc Get (KundeRequest)
-    returns (KundeDto);
 
     rpc Insert (KundeDto)
     returns (KundeDto);
@@ -38,4 +33,10 @@ service KundeService {
 
     rpc Delete (KundeDto)
     returns (google.protobuf.Empty);
+
+    rpc GetAll(google.protobuf.Empty)
+    returns (KundeAllDto);
+
+    rpc Get (KundeRequest)
+    returns (KundeDto);
 }
