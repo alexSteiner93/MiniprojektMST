@@ -50,7 +50,7 @@ namespace AutoReservation.Service.Grpc.Testing
         public async Task InsertKundeTest()
         {
             // arrange
-            KundeDto kunde = new KundeDto { Nachname = "Trump", Vorname = "Donald" };
+            KundeDto kunde = new KundeDto { Nachname = "Trump", Vorname = "Donald" , Geburtsdatum = new DateTime(1946, 6, 14).ToUniversalTime().ToTimestamp()};
 
             // act
             KundeDto newKunde = _target.Insert(kunde);

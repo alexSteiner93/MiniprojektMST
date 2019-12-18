@@ -103,7 +103,7 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (IsAvailable(reservation) && IsDateCorrect(reservation.Von, reservation.Bis))
+            if (IsAvailable(reservation))
             {
                 context.Entry(reservation).State = EntityState.Modified;
                 await context.SaveChangesAsync();

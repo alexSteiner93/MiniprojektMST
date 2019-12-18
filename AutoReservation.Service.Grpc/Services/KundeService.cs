@@ -34,7 +34,8 @@ namespace AutoReservation.Service.Grpc.Services
             if (result == null)
             {
                 throw new RpcException(new Status(
-                    StatusCode.OutOfRange, "Id couldn't be found."
+                    StatusCode.OutOfRange,
+                    "Client not found"
                 ));
             }
             return result.ConvertToDto();
@@ -58,9 +59,9 @@ namespace AutoReservation.Service.Grpc.Services
             catch (OptimisticConcurrencyException<Kunde> exception)
             { 
                 throw new RpcException(
-                    new Status(StatusCode.Aborted,
-                    "Conccurency Exception."),
-                    exception.ToString());
+                    new Status(StatusCode.Aborted,"Concurrency Exception."),
+                    exception.ToString()
+                    );
             }
             return new Empty();
         }
@@ -68,7 +69,6 @@ namespace AutoReservation.Service.Grpc.Services
         public override async Task<Empty> Delete(KundeDto request, ServerCallContext context)
         {
             KundeManager CLientManager = new KundeManager();
-           
             await CLientManager.Delete(request.ConvertToEntity());
             return new Empty();
         }

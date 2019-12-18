@@ -20,6 +20,7 @@ namespace AutoReservation.Dal.Entities
         [Column(TypeName = "DATETIME")]
         public DateTime Geburtsdatum { get; set; }
 
+        [Timestamp]
         public byte[] RowVersion { get; set; }
 
         public virtual ICollection<Reservation> Reservations { get; set; }

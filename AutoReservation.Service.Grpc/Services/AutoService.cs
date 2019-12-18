@@ -44,18 +44,16 @@ namespace AutoReservation.Service.Grpc.Services
         public override async Task<AutoDto> Insert(AutoDto request, ServerCallContext context)
         {
             AutoManager CarManager = new AutoManager();
-            Auto Car = request.ConvertToEntity();
-            Auto result = await CarManager.Insert(Car);
+            Auto result = await CarManager.Insert(request.ConvertToEntity());
             return result.ConvertToDto();
         }
 
         public override async Task<Empty> Update(AutoDto request, ServerCallContext context)
         {
             AutoManager CarManager = new AutoManager();
-            Auto Car = request.ConvertToEntity();
             try
             {
-                await CarManager.Update(Car);
+                await CarManager.Update(request.ConvertToEntity());
             }
             catch (OptimisticConcurrencyException<Auto> exception)
             {
@@ -70,8 +68,7 @@ namespace AutoReservation.Service.Grpc.Services
         public override async Task<Empty> Delete(AutoDto request, ServerCallContext context)
         {
             AutoManager CarManager = new AutoManager();
-            Auto Car = request.ConvertToEntity();
-            await CarManager.Delete(Car);
+            await CarManager.Delete(request.ConvertToEntity());
             return new Empty();
         }
     }
