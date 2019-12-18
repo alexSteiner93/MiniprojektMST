@@ -103,15 +103,23 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (IsAvailable(reservation))
+            if (IsAvailable(reservation) && IsDateCorrect(reservation.Von, reservation.Bis))
             {
                 context.Entry(reservation).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 return reservation;
             } else
             {
-                return null;
+                if (!IsDateCorrect(reservation.Von, reservation.Bis))
+                {
+                    throw new InvalidDateRangeException("Invalid Date range");
+                }
+                else if (!IsCarAvailable(reservation))
+                {
+                    throw new AutoUnavailableException("car not available");
+                }
             }
+            return null;
         }
     }
 }
