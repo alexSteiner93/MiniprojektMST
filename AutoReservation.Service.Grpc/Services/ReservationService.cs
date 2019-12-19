@@ -20,19 +20,6 @@ namespace AutoReservation.Service.Grpc.Services
             _reservationManager = new ReservationManager();
         }
 
-        public override async Task<ReservationAllDto> GetAll(Empty request, ServerCallContext context)
-        {
-
-            List<ReservationDto> temp = await _reservationManager.GetAll().ConvertToDtos();
-            ReservationAllDto result = new ReservationAllDto();
-            foreach(ReservationDto reservationDto in temp)
-            {
-                result.Reservations.Add(reservationDto);
-            }
-           
-            return result;
-        }
-
         public override async Task<ReservationDto> Get(ReservationRequest request, ServerCallContext context)
         {
           
@@ -97,6 +84,20 @@ namespace AutoReservation.Service.Grpc.Services
             }
             return new Empty();
         }
+
+        public override async Task<ReservationAllDto> GetAll(Empty request, ServerCallContext context)
+        {
+
+            List<ReservationDto> temp = await _reservationManager.GetAll().ConvertToDtos();
+            ReservationAllDto result = new ReservationAllDto();
+            foreach (ReservationDto reservationDto in temp)
+            {
+                result.Reservations.Add(reservationDto);
+            }
+
+            return result;
+        }
+
         public override async Task<Empty> Delete (ReservationDto request, ServerCallContext context)
         {
             await _reservationManager.Delete(request.ConvertToEntity());
