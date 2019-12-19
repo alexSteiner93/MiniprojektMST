@@ -24,7 +24,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = new DateTime(2019, 1, 10);
 
             // act
-            bool IsCorrect = _target.IsDateCorrect(von, bis);
+            bool IsCorrect = _target.CheckDate(von, bis);
 
             // assert
             Xunit.Assert.True(IsCorrect);
@@ -38,7 +38,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = new DateTime(2019, 1, 2);
 
             // act
-            bool IsCorrect = _target.IsDateCorrect(von, bis);
+            bool IsCorrect = _target.CheckDate(von, bis);
 
             // assert
             Xunit.Assert.True(IsCorrect);
@@ -52,7 +52,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = new DateTime(2019, 1, 1);
 
             // act
-            bool IsCorrect = _target.IsDateCorrect(von, bis);
+            bool IsCorrect = _target.CheckDate(von, bis);
 
             // assert
             Xunit.Assert.False(IsCorrect);
@@ -66,7 +66,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = new DateTime(2019, 1, 1);
 
             // act
-            bool IsCorrect = _target.IsDateCorrect(von, bis);
+            bool IsCorrect = _target.CheckDate(von, bis);
 
             // assert
             Xunit.Assert.False(IsCorrect);
@@ -80,7 +80,7 @@ namespace AutoReservation.BusinessLayer.Testing
             DateTime bis = new DateTime(2019, 1, 1);
 
             // act
-            bool IsCorrect = _target.IsDateCorrect(von, bis);
+            bool IsCorrect = _target.CheckDate(von, bis);
 
             // assert
             Xunit.Assert.False(IsCorrect);

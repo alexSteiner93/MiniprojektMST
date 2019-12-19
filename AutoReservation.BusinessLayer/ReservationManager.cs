@@ -13,40 +13,28 @@ namespace AutoReservation.BusinessLayer
     public class ReservationManager
     : ManagerBase
     {
-        public bool IsDateCorrect(DateTime von, DateTime bis)
+        public bool CheckDate(DateTime von, DateTime bis)
         {
             if ((bis - von).TotalHours >= 24) return true;
 
             return false;
         }
-        public bool IsCarAvailable(Reservation reservation)
+        public async Task<bool> IsCarAvailable(Reservation reservation)
         {
-            bool isAvailable = false;
             using AutoReservationContext context = new AutoReservationContext();
-            List<Reservation> reservations = context.Reservationen.Where(o => o.AutoId.Equals(reservation.AutoId)).ToList();
+            bool isOverlapping = await context.Reservationen.AnyAsync(existing =>
+                (existing.ReservationsNr != reservation.ReservationsNr)
+                && (existing.Von < reservation.Bis && reservation.Von < existing.Bis)
+                && (existing.AutoId == reservation.AutoId)
+                );
 
-            if (reservations.Count == 0) return true;
-
-            foreach (Reservation existing in reservations)
-            {
-                if ((reservation.Von > existing.Bis) // after
-                    || (reservation.Bis < existing.Von) // before
-                    || (reservation.ReservationsNr == existing.ReservationsNr))
-                {
-                    isAvailable = true;
-                } 
-                else
-                {
-                    return false;
-                }
-            }
-
-            return isAvailable;
+            return !isOverlapping;
         }
 
-        public bool IsAvailable (Reservation reservation)
+        public async Task<bool> CheckAvailability (Reservation reservation)
         {
-            return IsDateCorrect(reservation.Von, reservation.Bis) && IsCarAvailable(reservation);
+            bool isAvailable = await IsCarAvailable(reservation);
+            return CheckDate(reservation.Von, reservation.Bis) && isAvailable;
         }
 
         public async Task<List<Reservation>> GetAll()
@@ -61,7 +49,7 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (IsAvailable(reservation))
+            if (await CheckAvailability(reservation))
             {
                 context.Entry(reservation).State = EntityState.Added;
                 await context.SaveChangesAsync();
@@ -70,11 +58,11 @@ namespace AutoReservation.BusinessLayer
 
             else
             {
-                if (!IsDateCorrect(reservation.Von, reservation.Bis))
+                if (!CheckDate(reservation.Von, reservation.Bis))
                 {
                     throw new InvalidDateRangeException("Invalid Date range");
                 }
-                else if (!IsCarAvailable(reservation))
+                else if (!await IsCarAvailable(reservation))
                 {
                     throw new AutoUnavailableException("car not available");
                 }
@@ -103,18 +91,18 @@ namespace AutoReservation.BusinessLayer
         {
             using AutoReservationContext context = new AutoReservationContext();
 
-            if (IsAvailable(reservation))
+            if (await CheckAvailability(reservation))
             {
                 context.Entry(reservation).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 return reservation;
             } else
             {
-                if (!IsDateCorrect(reservation.Von, reservation.Bis))
+                if (!CheckDate(reservation.Von, reservation.Bis))
                 {
                     throw new InvalidDateRangeException("Invalid Date range");
                 }
-                else if (!IsCarAvailable(reservation))
+                else if (!await IsCarAvailable(reservation))
                 {
                     throw new AutoUnavailableException("car not available");
                 }
