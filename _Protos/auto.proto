@@ -31,6 +31,11 @@ message AutoAllDto {
 }
 
 service AutoService {
+    rpc GetAll(google.protobuf.Empty)
+    returns (AutoAllDto);
+
+    rpc Get(AutoRequest)
+    returns (AutoDto);
 
     rpc Insert(AutoDto)
     returns (AutoDto);
@@ -40,10 +45,4 @@ service AutoService {
 
     rpc Delete(AutoDto)
     returns (google.protobuf.Empty);
-
-    rpc GetAll(google.protobuf.Empty)
-    returns (AutoAllDto);
-
-    rpc Get(AutoRequest)
-    returns (AutoDto);
 }
